@@ -6,7 +6,7 @@ way
 ## Usage
 
 ```ts
-import { Bolt, Crate } from "../bolt/src/bolt.ts";
+import { Bolt, Crate } from "https://deno.land/x/bolt@0.1.1/src/bolt.ts";
 
 const ddirs: Crate = {
   name: "ddirs",
