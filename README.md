@@ -11,7 +11,10 @@ import { Bolt, Crate } from "https://deno.land/x/bolt@0.1.1/src/bolt.ts";
 const ddirs: Crate = {
   name: "ddirs",
   // The url of rust crate, this allows user to just import your library for it to work out of the box
-  url: "https://github.com/sigmaSd/ddirs2",
+  repo: {
+    url: "https://github.com/sigmaSd/ddirs2",
+    relativePath: "./ddirsRust",
+  },
   // Path of a local crate, this allows you as a developer to test your changes locally
   // Url takes precedence over path but if "BOLT" environment variable is set to "dev", path takes precedence (which you should set when developing)
   path: "./ddirsRust",
