@@ -45,26 +45,3 @@ export async function fileExists(path: string): Promise<boolean> {
     throw (e);
   }
 }
-
-import { Bolt, Crate } from "../bolt/src/bolt.ts";
-
-const ddirs: Crate = {
-  name: "ddirs",
-  url: "https://github.com/sigmaSd/ddirs2",
-  path: "./ddirsRust",
-};
-
-const bolt = new Bolt([ddirs]);
-await bolt.init();
-
-const libDdirs = bolt.getLib(ddirs.name);
-const dylib = Deno.dlopen(libDdirs, {
-  "config_dir": { parameters: [], result: "pointer" },
-});
-const maybeResult = dylib.symbols.config_dir();
-if (maybeResult.valueOf() !== 0n) {
-  const result = new Deno.UnsafePointerView(maybeResult);
-  return result.getCString();
-} else {
-  return undefined;
-}
