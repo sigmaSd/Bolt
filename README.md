@@ -10,7 +10,9 @@ import { Bolt, Crate } from "../bolt/src/bolt.ts";
 
 const ddirs: Crate = {
   name: "ddirs",
+  // The url of rust crate, this allows user to just import this file to work out of the box
   url: "https://github.com/sigmaSd/ddirs2",
+  // Path of a local crate, this allows you as a developper to test your changes locally, url takes precedence over path but if "BOLT" environment variable is set to "dev", path takes precedence (which you should set when developping)
   path: "./ddirsRust",
 };
 
