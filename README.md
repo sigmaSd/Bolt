@@ -14,7 +14,6 @@ const ddirs: Crate = {
   url: "https://github.com/sigmaSd/ddirs2",
   // Path of a local crate, this allows you as a developer to test your changes locally
   // Url takes precedence over path but if "BOLT" environment variable is set to "dev", path takes precedence (which you should set when developing)
-
   path: "./ddirsRust",
 };
 
