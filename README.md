@@ -39,11 +39,12 @@ console.log(config_dir());
 
 ## How it works
 
-For each crate specified in its contstructor Bolt will
+For each crate specified in its constructor Bolt will
 
-- If the `crate.url` is specified it clones the crate `~/.bolt/src`
+- If the `crate.repo` is specified it clones the crate `~/.bolt/src`
 - Compile the crate from either `~/.bolt/src` or from `crate.path` if
-  `crate.url` is not specified or if "BOLT" environment variable is set to "dev"
+  `crate.repo` is not specified or if "BOLT" environment variable is set to
+  "dev"
 - Now using `bolt.getLib(crateName)` will return the compiled lib path
 
 For a full example see https://github.com/sigmaSd/ddirs2

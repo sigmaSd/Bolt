@@ -14,6 +14,13 @@ export function libNameFromCrateName(crateName: string): string {
   return `lib${crateName}.${libSuffix}`;
 }
 
+export function homeDirWithPanic(): string {
+  const dir = homeDir();
+  if (dir === null) {
+    throw "Could not locate home directory";
+  }
+  return dir;
+}
 export function homeDir(): string | null {
   switch (Deno.build.os) {
     case "linux":

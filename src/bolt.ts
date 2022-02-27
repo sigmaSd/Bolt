@@ -1,17 +1,19 @@
+import { join } from "https://deno.land/std@0.127.0/path/mod.ts";
+
 import {
   fileExists,
-  homeDir,
+  homeDirWithPanic,
   libNameFromCrateName,
   mkdirAllowExists,
 } from "./utils.ts";
 
 /**
  * A Rust crate that will be compiled to a dynamic library
- * The `url` takes precedence over `path` unless the environment variable "BOLT" is set to "dev"
+ * The `repo` takes precedence over `path` unless the environment variable "BOLT" is set to "dev"
  */
 export interface Crate {
   name: string;
-  url?: string;
+  repo?: { url: string; relativePath: string };
   path?: string;
 }
 
@@ -48,7 +50,7 @@ export class Bolt {
     };
     const checkCratesAreValid = (crates: Crate[]) => {
       for (const crate of crates) {
-        if (crate.url === undefined && crate.path === undefined) {
+        if (crate.repo === undefined && crate.path === undefined) {
           throw "The crate `url` or the crate `path` needs to be specified.";
         }
       }
@@ -70,31 +72,39 @@ export class Bolt {
    */
   async init() {
     // Create Bolt directories
-    const boldDir = homeDir() + "/.bolt";
+    const boldDir = join(homeDirWithPanic(), "/.bolt");
     await mkdirAllowExists(boldDir);
-    await mkdirAllowExists(boldDir + "/src");
-    await mkdirAllowExists(boldDir + "/lib");
+    await mkdirAllowExists(join(boldDir, "/src"));
+    await mkdirAllowExists(join(boldDir, "/lib"));
 
     // Clone and compile the crates
-    const crateLibDir = boldDir + "/lib/";
+    const crateLibDir = join(boldDir, "/lib/");
     for (const crate of this.#crates) {
       if (
         this.#buildType == "release" &&
         await fileExists(
-          crateLibDir + "release/" + libNameFromCrateName(crate.name),
+          join(
+            crateLibDir,
+            "release/",
+            libNameFromCrateName(crate.name),
+          ),
         )
       ) {
         continue;
       }
       const compileFromGit = async () => {
-        const crateSrcDir = boldDir + "/src/" + crate.name;
-        await gitClone(crate.url!, crateSrcDir); // compileFromGit should only be used if url is defined
-        await cargoCompile(crateSrcDir, crateLibDir, "release");
+        const crateSrcDir = join(boldDir, "/src/", crate.name);
+        await gitClone(crate.repo!.url, crateSrcDir); // compileFromGit should only be used if url is defined
+        await cargoCompile(
+          join(crateSrcDir, crate.repo!.relativePath),
+          crateLibDir,
+          "release",
+        );
       };
       const compileFromPath = async (buildType: "dev" | "release") => {
         await cargoCompile(crate.path!, crateLibDir, buildType); // compileFromPath should only be used if path is defined
       };
-      if (crate.url !== undefined && crate.path !== undefined) {
+      if (crate.repo !== undefined && crate.path !== undefined) {
         // The user has inputted both url and path
         // We will discern the priority using an environment variable
         if (this.#buildType === "dev") {
@@ -102,7 +112,7 @@ export class Bolt {
         } else {
           await compileFromGit();
         }
-      } else if (crate.url !== undefined) {
+      } else if (crate.repo !== undefined) {
         await compileFromGit();
       } else {
         // crate.path !== undefined
@@ -113,10 +123,13 @@ export class Bolt {
   /**
    * Gets the compiled library path of the specified crate
    */
-  getLib(crateName: string) {
-    return `${homeDir()}/.bolt/lib/${
-      (this.#buildType === "dev") ? "debug" : "release"
-    }/${libNameFromCrateName(crateName)}`;
+  getLib(crateName: string): string {
+    return join(
+      homeDirWithPanic(),
+      ".bolt/lib/",
+      (this.#buildType === "dev") ? "debug" : "release",
+      libNameFromCrateName(crateName),
+    );
   }
 }
 
@@ -142,7 +155,7 @@ async function cargoCompile(
       "cdylib",
       "--release",
       "--manifest-path",
-      crateSrcDir + "/Cargo.toml",
+      join(crateSrcDir, "/Cargo.toml"),
       "--target-dir",
       crateLibDir,
     ].filter((arg) => (buildType === "dev") ? arg !== "--release" : arg),
