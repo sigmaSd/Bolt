@@ -41,7 +41,7 @@ console.log(config_dir());
 
 For each crate specified in its contstructor Bolt will
 
-- if the `crate.url` is specified it clones the crate `~/.bolt/src`
+- If the `crate.url` is specified it clones the crate `~/.bolt/src`
 - Compile the crate from either `~/.bolt/src` or from `crate.path` if
   `crate.url` is not specified or if "BOLT" environment variable is set to "dev"
 - Now using `bolt.getLib(crateName)` will return the compiled lib path
