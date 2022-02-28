@@ -1,17 +1,21 @@
 export function libNameFromCrateName(crateName: string): string {
   let libSuffix = "";
+  let libPrefix = "";
   switch (Deno.build.os) {
     case "windows":
       libSuffix = "dll";
+      libPrefix = "";
       break;
     case "darwin":
       libSuffix = "dylib";
+      libPrefix = "lib";
       break;
     case "linux":
       libSuffix = "so";
+      libPrefix = "lib";
       break;
   }
-  return `lib${crateName}.${libSuffix}`;
+  return `${libPrefix}${crateName}.${libSuffix}`;
 }
 
 export function homeDirWithPanic(): string {
