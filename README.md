@@ -47,4 +47,7 @@ For each crate specified in its constructor Bolt will
   "dev"
 - Now using `bolt.getLib(crateName)` will return the compiled lib path
 
-For a full example see https://github.com/sigmaSd/ddirs2
+## Examples
+
+- https://github.com/sigmaSd/ddirs2
+- https://github.com/sigmaSd/Dindicatif
