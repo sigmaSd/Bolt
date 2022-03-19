@@ -116,7 +116,7 @@ export class Bolt {
         await compileFromGit();
       } else {
         // crate.path !== undefined
-        await compileFromPath("release");
+        await compileFromPath(this.#buildType as "dev" | "release");
       }
     }
   }
